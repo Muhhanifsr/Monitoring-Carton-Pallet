@@ -54,6 +54,7 @@
         setupSettings();
         setupMisc();
         setupThemeToggle();
+        setupPWAInstall();
         updateDashboard();
         renderRecentTransactions();
         renderHistory();
@@ -1138,6 +1139,108 @@ function getStockData() {
                 }
                 showToast('Tema Terang Diaktifkan', 'success');
             }
+        });
+    }
+
+    // ============================================
+    // PWA Install Prompt
+    // ============================================
+    function setupPWAInstall() {
+        let deferredPrompt = null;
+        const banner = document.getElementById('pwaInstallBanner');
+        const btnInstall = document.getElementById('btnInstallPWA');
+        const btnDismiss = document.getElementById('btnDismissPWA');
+
+        // Jika sudah berjalan sebagai PWA (standalone), langsung keluar
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+            || window.navigator.standalone === true;
+        if (isStandalone) return;
+
+        // ─── Android / Chrome ─────────────────────────────────────────
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            // Tampilkan banner install
+            if (banner) {
+                banner.style.display = 'flex';
+                requestAnimationFrame(() =>
+                    requestAnimationFrame(() => banner.classList.add('pwa-banner-show'))
+                );
+            }
+        });
+
+        btnInstall && btnInstall.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            hideBanner();
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            deferredPrompt = null;
+            if (outcome === 'accepted') {
+                showToast('Aplikasi sedang dipasang!', 'success');
+            }
+        });
+
+        btnDismiss && btnDismiss.addEventListener('click', () => {
+            hideBanner();
+            deferredPrompt = null; // jangan tanya lagi di sesi ini
+        });
+
+        function hideBanner() {
+            if (!banner) return;
+            banner.classList.remove('pwa-banner-show');
+            setTimeout(() => { banner.style.display = 'none'; }, 400);
+        }
+
+        // ─── iOS Safari ───────────────────────────────────────────────
+        const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+        if (isIOS) {
+            setTimeout(showIOSGuide, 2500);
+        }
+
+        function showIOSGuide() {
+            if (document.getElementById('iosInstallGuide')) return;
+            const guide = document.createElement('div');
+            guide.id = 'iosInstallGuide';
+            guide.className = 'ios-install-guide';
+            guide.innerHTML = `
+                <div class="ios-guide-inner">
+                    <button class="ios-guide-close" id="btnCloseIosGuide" aria-label="Tutup">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <p class="ios-guide-title">
+                        <i class="fas fa-mobile-alt"></i> Install di iPhone / iPad
+                    </p>
+                    <div class="ios-guide-steps">
+                        <div class="ios-guide-step">
+                            <div class="ios-step-num">1</div>
+                            <span>Ketuk ikon <i class="fas fa-share-square"></i> <strong>Share</strong> di browser</span>
+                        </div>
+                        <div class="ios-guide-step">
+                            <div class="ios-step-num">2</div>
+                            <span>Pilih <strong>"Add to Home Screen"</strong></span>
+                        </div>
+                        <div class="ios-guide-step">
+                            <div class="ios-step-num">3</div>
+                            <span>Ketuk <strong>Add</strong> di pojok kanan atas</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(guide);
+            requestAnimationFrame(() =>
+                requestAnimationFrame(() => guide.classList.add('ios-guide-show'))
+            );
+            document.getElementById('btnCloseIosGuide')?.addEventListener('click', () => {
+                guide.classList.remove('ios-guide-show');
+                setTimeout(() => guide.remove(), 400);
+            });
+        }
+
+        // ─── App installed ─────────────────────────────────────────────
+        window.addEventListener('appinstalled', () => {
+            hideBanner();
+            deferredPrompt = null;
+            showToast('Aplikasi berhasil dipasang!', 'success');
         });
     }
 

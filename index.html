@@ -78,7 +78,7 @@
     <link rel="shortcut icon" href="/Monitoring-Kardus/icons/favicon-32.png?v=20260429">
 
     <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/custom.css?v=20260601">
+    <link rel="stylesheet" href="css/custom.css?v=20260601b">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
@@ -95,6 +95,26 @@
         </div>
     </div>
 
+    <!-- PWA Install Banner (Android/Chrome) -->
+    <div id="pwaInstallBanner" class="pwa-install-banner" style="display:none;" role="dialog" aria-label="Install Aplikasi">
+        <div class="pwa-banner-left">
+            <div class="pwa-banner-icon">
+                <img src="thumb_ippi-removebg-preview.png" alt="App Icon" onerror="this.src='';this.style.display='none'">
+            </div>
+            <div class="pwa-banner-text">
+                <p class="pwa-banner-title">Install StockMonitor</p>
+                <p class="pwa-banner-desc">Akses cepat & bisa dipakai offline</p>
+            </div>
+        </div>
+        <div class="pwa-banner-actions">
+            <button class="pwa-btn-install" id="btnInstallPWA">
+                <i class="fas fa-download"></i> Install
+            </button>
+            <button class="pwa-btn-dismiss" id="btnDismissPWA" aria-label="Tutup">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
 
     <!-- Sidebar -->
     <aside class="sidebar" id="sidebar">
@@ -710,7 +730,7 @@
     </div>
 
     <script src="js/bootstrap.bundle.min.js"></script>
-    <script src="js/app.js?v=20260601"></script>
+    <script src="js/app.js?v=20260601b"></script>
     <script>
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', async () => {
