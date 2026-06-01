@@ -6,16 +6,16 @@
  *  - Google Apps Script API calls                 → Network First (no cache)
  */
 
-const CACHE_NAME = 'stockmonitor-v2.3';
+const CACHE_NAME = 'stockmonitor-v2.4';
 const BASE_PATH = new URL(self.registration.scope).pathname;
 const STATIC_ASSETS = [
   '',
   'index.html',
-  'manifest.json?v=20260429',
+  'manifest.json',
   'css/bootstrap.min.css',
-  'css/custom.css?v=20260601c',
+  'css/custom.css?v=20260601d',
   'js/bootstrap.bundle.min.js',
-  'js/app.js?v=20260601c',
+  'js/app.js?v=20260601d',
   'icons/icon-192.png?v=20260429',
   'icons/icon-512.png?v=20260429',
   'icons/apple-touch-icon.png?v=20260429',

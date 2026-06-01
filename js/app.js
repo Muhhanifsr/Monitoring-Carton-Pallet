@@ -1170,19 +1170,32 @@ function getStockData() {
         });
 
         btnInstall && btnInstall.addEventListener('click', async () => {
-            if (!deferredPrompt) return;
-            hideBanner();
-            deferredPrompt.prompt();
-            const { outcome } = await deferredPrompt.userChoice;
-            deferredPrompt = null;
-            if (outcome === 'accepted') {
-                showToast('Aplikasi sedang dipasang!', 'success');
+            if (deferredPrompt) {
+                hideBanner();
+                try {
+                    await deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    deferredPrompt = null;
+                    if (outcome === 'accepted') {
+                        showToast('Aplikasi sedang dipasang!', 'success');
+                    }
+                } catch (err) {
+                    console.error('[PWA] Install prompt failed:', err);
+                    showToast('Gagal membuka dialog install. Coba lewat menu browser (⋮).', 'warning');
+                }
+                return;
+            }
+            const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+            if (isIOS) {
+                showIOSGuide();
+            } else {
+                showToast('Buka menu browser (⋮) → "Install app" atau "Add to Home screen"', 'info');
             }
         });
 
         btnDismiss && btnDismiss.addEventListener('click', () => {
             hideBanner();
-            deferredPrompt = null; // jangan tanya lagi di sesi ini
+            // deferredPrompt tetap disimpan agar tombol Install masih bisa dipakai
         });
 
         function hideBanner() {
