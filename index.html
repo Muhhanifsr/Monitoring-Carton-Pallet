@@ -78,7 +78,7 @@
     <link rel="shortcut icon" href="/Monitoring-Kardus/icons/favicon-32.png?v=20260429">
 
     <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/custom.css?v=20260601b">
+    <link rel="stylesheet" href="css/custom.css?v=20260601c">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
@@ -730,37 +730,22 @@
     </div>
 
     <script src="js/bootstrap.bundle.min.js"></script>
-    <script src="js/app.js?v=20260601b"></script>
+    <script src="js/app.js?v=20260601c"></script>
     <script>
         if ('serviceWorker' in navigator) {
-            window.addEventListener('load', async () => {
-                try {
-                    const PWA_BASE_PATH = '/Monitoring-Kardus/';
-                    const reg = await navigator.serviceWorker.register(
-                        `${PWA_BASE_PATH}service-worker.js`,
-                        { scope: PWA_BASE_PATH, updateViaCache: 'none' }
-                    );
-                    // Jika ada SW baru menunggu, aktifkan langsung
-                    if (reg.waiting) {
-                        reg.waiting.postMessage({ type: 'SKIP_WAITING' });
-                    }
-                    reg.addEventListener('updatefound', () => {
-                        const newWorker = reg.installing;
-                        if (newWorker) {
-                            newWorker.addEventListener('statechange', () => {
-                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                    newWorker.postMessage({ type: 'SKIP_WAITING' });
-                                }
-                            });
-                        }
+            window.addEventListener('load', () => {
+                const PWA_BASE_PATH = '/Monitoring-Kardus/';
+                navigator.serviceWorker
+                    .register(`${PWA_BASE_PATH}service-worker.js`, {
+                        scope: PWA_BASE_PATH,
+                        updateViaCache: 'none'
+                    })
+                    .then(reg => {
+                        console.log('[PWA] Service Worker registered, scope:', reg.scope);
+                    })
+                    .catch(err => {
+                        console.error('[PWA] Service Worker registration failed:', err);
                     });
-                    // Reload saat SW baru aktif
-                    navigator.serviceWorker.addEventListener('controllerchange', () => {
-                        window.location.reload();
-                    });
-                } catch (error) {
-                    console.error('[PWA] Service Worker registration failed:', error);
-                }
             });
         }
     </script>
