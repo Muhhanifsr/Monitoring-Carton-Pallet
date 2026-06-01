@@ -6,16 +6,16 @@
  *  - Google Apps Script API calls                 → Network First (no cache)
  */
 
-const CACHE_NAME = 'stockmonitor-v2.0';
+const CACHE_NAME = 'stockmonitor-v2.1';
 const BASE_PATH = new URL(self.registration.scope).pathname;
 const STATIC_ASSETS = [
   '',
   'index.html',
   'manifest.json?v=20260429',
   'css/bootstrap.min.css',
-  'css/custom.css',
+  'css/custom.css?v=20260601',
   'js/bootstrap.bundle.min.js',
-  'js/app.js',
+  'js/app.js?v=20260601',
   'icons/icon-192.png?v=20260429',
   'icons/icon-512.png?v=20260429',
   'icons/apple-touch-icon.png?v=20260429',
@@ -57,6 +57,13 @@ self.addEventListener('install', (event) => {
       })
       .then(() => self.skipWaiting())
   );
+});
+
+// ─── Message (skipWaiting trigger) ──────────────────────────────────────────
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
 });
 
 // ─── Activate ────────────────────────────────────────────────────────────────
