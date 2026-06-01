@@ -1123,7 +1123,7 @@ function getStockData() {
                         icon.style.transform = 'rotate(0deg) scale(1)';
                     }, 200);
                 }
-                showToast('Tema gelap diaktifkan 🌙', 'success');
+                showToast('Tema Gelap Diaktifkan', 'success');
             } else {
                 // Switch to light
                 html.setAttribute('data-theme', 'light');
@@ -1136,7 +1136,7 @@ function getStockData() {
                         icon.style.transform = 'rotate(0deg) scale(1)';
                     }, 200);
                 }
-                showToast('Tema terang diaktifkan ☀️', 'success');
+                showToast('Tema Terang Diaktifkan', 'success');
             }
         });
     }
@@ -1268,19 +1268,64 @@ function getStockData() {
         el.textContent = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()} • ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
     }
 
-    function showToast(message, type) {
-        const toastEl = $('#toastNotif');
-        const toastMsg = $('#toastMessage');
-        if (!toastEl || !toastMsg) return;
+    function showToast(message, type = 'success') {
+        // Remove existing toasts first
+        const existing = document.querySelectorAll('.snackbar-notif');
+        existing.forEach(el => el.remove());
 
-        toastMsg.textContent = message;
-        toastEl.className = `toast align-items-center border-0 toast-${type}`;
+        const icons = {
+            success: 'fas fa-check-circle',
+            error:   'fas fa-exclamation-circle',
+            warning: 'fas fa-exclamation-triangle',
+            info:    'fas fa-info-circle'
+        };
+        const titles = {
+            success: 'Berhasil',
+            error:   'Gagal',
+            warning: 'Peringatan',
+            info:    'Info'
+        };
 
-        const icon = type === 'success' ? '✅' : '❌';
-        toastMsg.textContent = `${icon} ${message}`;
+        const snackbar = document.createElement('div');
+        snackbar.className = `snackbar-notif snackbar-${type}`;
+        snackbar.innerHTML = `
+            <div class="snackbar-icon-wrap">
+                <i class="${icons[type] || icons.info}"></i>
+            </div>
+            <div class="snackbar-body">
+                <div class="snackbar-title">${titles[type] || 'Notifikasi'}</div>
+                <div class="snackbar-msg">${message}</div>
+            </div>
+            <button class="snackbar-close" aria-label="Tutup">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="snackbar-progress"></div>
+        `;
 
-        const toast = bootstrap.Toast.getOrCreateInstance(toastEl, { delay: 3000 });
-        toast.show();
+        document.body.appendChild(snackbar);
+
+        // Animate in
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => snackbar.classList.add('snackbar-show'));
+        });
+
+        // Close button
+        snackbar.querySelector('.snackbar-close').addEventListener('click', () => {
+            dismissSnackbar(snackbar);
+        });
+
+        // Auto dismiss
+        const timer = setTimeout(() => dismissSnackbar(snackbar), 3500);
+        snackbar._timer = timer;
+    }
+
+    function dismissSnackbar(el) {
+        if (!el || el._dismissed) return;
+        el._dismissed = true;
+        if (el._timer) clearTimeout(el._timer);
+        el.classList.remove('snackbar-show');
+        el.classList.add('snackbar-hide');
+        setTimeout(() => el.remove(), 400);
     }
 
     function showLoading(show) {
